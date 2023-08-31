@@ -307,8 +307,8 @@ public class AppManagement : MonoBehaviour
     {
         if(mainscreen.transform.childCount <= 0)
         {
-            Report();
-            runReportDB();
+            //Report();
+            //runReportDB();
             StartCoroutine(Exit());
             Application.Quit();
         }
@@ -377,7 +377,8 @@ public class AppManagement : MonoBehaviour
         }
         else
         {
-            filename = Application.dataPath + "/Daily Report/Report " + System.DateTime.Now.ToString("MM-dd-yyyy") + "(" + GlobalVariable.report_time + ")" + ".csv";
+            filename = Application.dataPath + "/Daily Report/Report " + 
+                        System.DateTime.Now.ToString("MM-dd-yyyy") + "(" + GlobalVariable.report_time + ")" + ".csv";
         }
         GlobalVariable.report_time++;
         WriteFile();
@@ -554,7 +555,10 @@ public class AppManagement : MonoBehaviour
 
     public void runSearchServiceCando()
     {
-        if(!gameObject.GetComponent<Timer>().currently_count_down && (gameObject.name == (gameObject.transform.parent.transform.parent.transform.parent.name + gameObject.transform.parent.transform.parent.transform.parent.GetComponent<serviceturn>().current_turn)))
+        if(!gameObject.GetComponent<Timer>().currently_count_down && 
+            (gameObject.name == (gameObject.transform.parent.transform.parent.transform.parent.name + 
+                                    gameObject.transform.parent.transform.parent.transform.parent.GetComponent<serviceturn>().current_turn
+                                )))
         {
             var fn = GlobalVariable.metadata2[gameObject.transform.parent.transform.parent.transform.parent.GetSiblingIndex()][2];
             var id = GlobalVariable.metadata2[gameObject.transform.parent.transform.parent.transform.parent.GetSiblingIndex()][1];
@@ -918,7 +922,9 @@ public class AppManagement : MonoBehaviour
 
     public void runRemoveEmployee()
     {
-        StartCoroutine(RemoveEmployee(GlobalVariable.metadata[gameObject.transform.parent.GetSiblingIndex()][2], GlobalVariable.metadata[gameObject.transform.parent.GetSiblingIndex()][0], GlobalVariable.metadata[gameObject.transform.parent.GetSiblingIndex()][1]));
+        StartCoroutine(RemoveEmployee(GlobalVariable.metadata[gameObject.transform.parent.GetSiblingIndex()][2], 
+                                        GlobalVariable.metadata[gameObject.transform.parent.GetSiblingIndex()][0], 
+                                        GlobalVariable.metadata[gameObject.transform.parent.GetSiblingIndex()][1]));
     }
 
     IEnumerator AddEmployee(string firstname, string lastname, string salonid)
@@ -1022,7 +1028,8 @@ public class AppManagement : MonoBehaviour
 
     public void runCandoService()
     {
-        StartCoroutine(CandoService(GlobalVariable.metadata[gameObject.transform.parent.GetSiblingIndex()][0], GlobalVariable.fn, gameObject.GetComponent<Toggle>().isOn));
+        StartCoroutine(CandoService(GlobalVariable.metadata[gameObject.transform.parent.GetSiblingIndex()][0], 
+                                    GlobalVariable.fn, gameObject.GetComponent<Toggle>().isOn));
     }
 
     IEnumerator CandoService(string s, string n, bool v)

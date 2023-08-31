@@ -36,7 +36,7 @@ public class Timer : MonoBehaviour
     {
         transparent.a = 0;
         update_timer_cd = 0;
-        GetTurnCount();
+        StartCoroutine(GetTurnCount());
     }
     // Update is called once per frame
     void Update()
@@ -60,8 +60,8 @@ public class Timer : MonoBehaviour
                 gameObject.GetComponent<Slider>().value = timeleft;
                 currently_count_down = true;
                 gameObject.transform.GetChild(3).GetComponent<TMP_Text>().text = string.Format("{0}:{1}{2}", 
-                                                                                                Mathf.RoundToInt(timeleft)/60,                       //minutes
-                                                                                                Mathf.RoundToInt(timeleft%60)/10,                   //seconds
+                                                                                                Mathf.RoundToInt(timeleft)/60,          //minutes
+                                                                                                Mathf.RoundToInt(timeleft%60)/10,      //seconds
                                                                                                 Mathf.RoundToInt(timeleft%60)%10
                                                                                                 );
                 
@@ -77,8 +77,9 @@ public class Timer : MonoBehaviour
                 GlobalVariable.AddTurn(gameObject.transform.parent.transform.parent.transform.parent.GetComponent<serviceturn>().current_turn, 
                                         serviceid, servicename, servicecost, apporreq,
                                         gameObject.transform.parent.transform.parent.transform.parent.GetSiblingIndex());
-                StartCoroutine(UpdateTurnService(0, gameObject.name));
                 StartCoroutine(UpdateTurnService(1, gameObject.name));
+                StartCoroutine(UpdateTurnService(0, gameObject.name));
+                //gameObject.transform.parent.transform.parent.transform.parent.GetComponent<serviceturn>().current_turn += 1;
                 
             }
 
@@ -105,7 +106,7 @@ public class Timer : MonoBehaviour
         {
             gameObject.transform.GetChild(0).GetComponent<Image>().color = Color.white;
         }
-        else
+        else if(finish)
         {
             gameObject.transform.GetChild(0).GetComponent<Image>().color = Color.red;
         }
@@ -121,7 +122,9 @@ public class Timer : MonoBehaviour
             apporreq = "request";
         }
 
-        if(appointment == 0 && request == 0 && gameObject.name == (gameObject.transform.parent.transform.parent.transform.parent.name + gameObject.transform.parent.transform.parent.transform.parent.GetComponent<serviceturn>().current_turn))
+        if(appointment == 0 && request == 0 && gameObject.name == (gameObject.transform.parent.transform.parent.transform.parent.name + 
+                                                                    gameObject.transform.parent.transform.parent.transform.parent.GetComponent<serviceturn>().current_turn
+                                                                    ))
         {
             gameObject.transform.GetChild(0).GetComponent<Image>().color = Color.white;
             apporreq = "";
@@ -176,7 +179,7 @@ public class Timer : MonoBehaviour
         GlobalVariable.CheckSQLError(www);
 
         int.TryParse(www.downloadHandler.text, out int intturncount);
-        turncount = intturncount;
+        this.turncount = intturncount;
         www.Dispose();
     }
 
@@ -193,7 +196,7 @@ public class Timer : MonoBehaviour
 
         GlobalVariable.CheckSQLError(www);
 
-        if(type == 0)
+        if(www.downloadHandler.text != "0 data" && type == 0)
         {
             string[] tempdata = www.downloadHandler.text.Split("*");
             string[][] data = new string[tempdata.Length - 1][];
@@ -206,10 +209,11 @@ public class Timer : MonoBehaviour
             GlobalVariable.metadata = data;
 
             int.TryParse(data[0][1], out int totalcost);
-            if(totalcost >= turncount)
+            if(totalcost >= this.turncount)
             {
                 gameObject.transform.parent.transform.parent.transform.parent.GetComponent<serviceturn>().current_turn += 1;
             }
+            
 
             gameObject.transform.GetChild(2).transform.GetChild(0).GetComponent<TMP_Text>().text = data[0][0];
 
