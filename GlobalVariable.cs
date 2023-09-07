@@ -39,6 +39,9 @@ public static class GlobalVariable
     public static int employee;
     public static int service;
 
+    public static int maxturn;
+    public static int turncount;
+
     public static void CheckSQLError(UnityWebRequest www)
     {
         switch(www.result)

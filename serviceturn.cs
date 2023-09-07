@@ -81,6 +81,7 @@ public class serviceturn : MonoBehaviour
         if(www.downloadHandler.text != "0 data")
         {
             int.TryParse(www.downloadHandler.text, out int intmaxturn);
+            GlobalVariable.maxturn = intmaxturn;
             Display(intmaxturn);
         }
 

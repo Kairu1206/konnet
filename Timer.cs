@@ -25,12 +25,16 @@ public class Timer : MonoBehaviour
 
     public string serviceid = "";
     public string servicename = "";
+
     public int servicecost = 0;
     public string apporreq = "";
 
     public bool addTurn = true;
 
     public int turncount = 0;
+    
+    public int totalcost = 0;
+    public string services = "";
 
     void Start()
     {
@@ -41,6 +45,7 @@ public class Timer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if(gameObject.transform.GetSiblingIndex() + 1 == gameObject.transform.parent.transform.parent.transform.parent.GetComponent<serviceturn>().current_turn)
         {
             gameObject.transform.GetChild(2).GetComponent<Button>().interactable = true;
@@ -56,8 +61,7 @@ public class Timer : MonoBehaviour
             
             if(timeleft > 0)
             {
-                timeleft -= Time.deltaTime;
-                gameObject.GetComponent<Slider>().value = timeleft;
+                
                 currently_count_down = true;
                 gameObject.transform.GetChild(3).GetComponent<TMP_Text>().text = string.Format("{0}:{1}{2}", 
                                                                                                 Mathf.RoundToInt(timeleft)/60,          //minutes
@@ -69,11 +73,14 @@ public class Timer : MonoBehaviour
             else if(timeleft == 0)
             {
                 startTimer = false;
+                gameObject.transform.GetChild(0).GetComponent<Image>().color = Color.red;
                 gameObject.transform.GetChild(2).GetComponent<Button>().interactable = false;
                 gameObject.transform.GetChild(3).GetComponent<TMP_Text>().text = "FINISH";
                 currently_count_down = false;
                 finish = true;
                 addTurn = true;
+                totalcost += servicecost;
+                services += "/" + servicename;
                 GlobalVariable.AddTurn(gameObject.transform.parent.transform.parent.transform.parent.GetComponent<serviceturn>().current_turn, 
                                         serviceid, servicename, servicecost, apporreq,
                                         gameObject.transform.parent.transform.parent.transform.parent.GetSiblingIndex());
@@ -102,13 +109,9 @@ public class Timer : MonoBehaviour
         {
             gameObject.transform.GetChild(0).GetComponent<Image>().color = Color.grey;
         }
-        else if(gameObject.transform.GetChild(2).GetComponent<Button>().interactable && !finish)
+        else if(!finish && gameObject.transform.GetChild(2).GetComponent<Button>().interactable)
         {
             gameObject.transform.GetChild(0).GetComponent<Image>().color = Color.white;
-        }
-        else if(finish)
-        {
-            gameObject.transform.GetChild(0).GetComponent<Image>().color = Color.red;
         }
 
         if(appointment == 1)
@@ -180,6 +183,7 @@ public class Timer : MonoBehaviour
 
         int.TryParse(www.downloadHandler.text, out int intturncount);
         this.turncount = intturncount;
+        GlobalVariable.turncount = intturncount;
         www.Dispose();
     }
 
@@ -188,8 +192,8 @@ public class Timer : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField("type", type);
         form.AddField("name", name);
-        form.AddField("service", servicename);
-        form.AddField("cost", servicecost);
+        form.AddField("services", services);
+        form.AddField("totalcost", totalcost);
 
         UnityWebRequest www = UnityWebRequest.Post(updateturnserviceurl, form);
         yield return www.SendWebRequest();
@@ -208,10 +212,17 @@ public class Timer : MonoBehaviour
 
             GlobalVariable.metadata = data;
 
-            int.TryParse(data[0][1], out int totalcost);
-            if(totalcost >= this.turncount)
+            int.TryParse(data[0][1], out int inttotalcost);
+            print(inttotalcost);
+            print(GlobalVariable.turncount);
+            print(inttotalcost >= GlobalVariable.turncount);
+            if(inttotalcost >= GlobalVariable.turncount)
             {
                 gameObject.transform.parent.transform.parent.transform.parent.GetComponent<serviceturn>().current_turn += 1;
+            }
+            else
+            {
+                runSync(2, -1);
             }
             
 

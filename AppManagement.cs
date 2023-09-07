@@ -1089,6 +1089,7 @@ public class AppManagement : MonoBehaviour
         GlobalVariable.last_turn_button_press.transform.GetChild(2).transform.GetChild(0).GetComponent<TMP_Text>().text = GlobalVariable.metadata1[index][2];
         GlobalVariable.last_turn_button_press.transform.GetChild(1).GetComponent<Image>().color = Color.green;
         GlobalVariable.last_turn_button_press.GetComponent<Timer>().startTimer = true;
+        GlobalVariable.last_turn_button_press.GetComponent<Timer>().finish = false;
         GameObject.FindWithTag("refreshbutton").GetComponent<Button>().onClick.Invoke();
     }
 
